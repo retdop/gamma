@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 from hmmlearn.hmm import GaussianHMM
 
 os.chdir('/home/gabriel/fun/trading/gamma')
-data = pd.read_csv('data/data-*', delimiter = ';')
+data = pd.read_csv('data/data_all.txt', delimiter = ' ')
 
-X = data['Weighted Price'].as_matrix()[:-1]
+X = data['Weighted_Price'].as_matrix()[:-1]
 
 def normalize(v):
     norm = np.linalg.norm(v)

@@ -1,4 +1,4 @@
-Timestamp Open High Low Close Volume (BTC) Volume (Currency) Weighted Price
+Timestamp Open High Low Close Volume_BTC Volume_Currency Weighted_Price
 2017-06-12 00:00:00 2599.786 2600 2596.786 2599.442 16 41595.15 2599.14
 2017-06-12 00:05:00 2599.442 2600 2594.932 2595.53 17.56 45640.84 2599.13
 2017-06-12 00:10:00 2598.258 2598.273 2595.582 2598.273 0.64 1652.67 2596.62
