@@ -7,8 +7,13 @@ from hmmlearn.hmm import GaussianHMM
 os.chdir('/home/gabriel/fun/trading/gamma')
 data = pd.read_csv('data/data_all.txt', delimiter = ' ')
 
+for col in ['Open', 'High', 'Low', 'Close', 'Volume_BTC', 'Volume_Currency', 'Weighted_Price']:
+    print(col)
+    data[col] = data[col].astype(float)
+
 X = data['Weighted_Price'].as_matrix()[:-1]
 
+    
 def normalize(v):
     norm = np.linalg.norm(v)
     if norm == 0:
