@@ -8,7 +8,6 @@ os.chdir('/home/gabriel/fun/trading/gamma')
 data = pd.read_csv('data/data_all.txt', delimiter = ' ')
 
 for col in ['Open', 'High', 'Low', 'Close', 'Volume_BTC', 'Volume_Currency', 'Weighted_Price']:
-    print(col)
     data[col] = data[col].astype(float)
 
 X = data['Weighted_Price'].as_matrix()[:-1]
@@ -20,10 +19,12 @@ def normalize(v):
        return v
     return v / norm
 
+def normalize2(v):
+    return v / v[0]
 
 #%%
-lon = 20
-ncomp = 3
+lon = 5
+ncomp = 2
 
 
 Y = []
@@ -34,7 +35,7 @@ while i < len(X):
         for j in range(lon):
             res.append(X[i+j])
 
-       # res = normalize(res)
+        res = normalize2(res)
         Y.append(res)
         i = i+lon
     else:
@@ -57,3 +58,8 @@ state = 0
 for i in range(len(Y)):
     if hidden_states[i] == state :
         plt.plot(Y[i])
+#%%
+        
+yo = pd.DataFrame(Y[np.where(hidden_states == 0)[0]])
+del yo['variance']
+yo['variance'] = yo.apply(np.var, axis=1)

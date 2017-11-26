@@ -7,10 +7,13 @@ from hmmlearn.hmm import GaussianHMM
 
 
 os.chdir('/home/gabriel/fun/trading/gamma')
-data = pd.read_csv('data/data-*', delimiter = ';')
+data = pd.read_csv('data/data_all.txt', delimiter = ' ')
+for col in ['Open', 'High', 'Low', 'Close', 'Volume_BTC', 'Volume_Currency', 'Weighted_Price']:
+    data[col] = data[col].astype(float)
 
-X = data['Weighted Price'].as_matrix()[:-1]
+X = data['Weighted_Price'].as_matrix()[:-1]
 
+    
 
 from sklearn import svm
 from sklearn.ensemble import GradientBoostingClassifier
@@ -18,7 +21,8 @@ from sklearn import metrics
 from sklearn import linear_model
 
 
-pls = 15
+pls = 50
+print(pls)
 y =[]
 x = []
 for i in range(len(X)-pls-1):
