@@ -33,6 +33,7 @@ overlap = 5
 ncomp = 11
 
 Y = []
+Ybis = []
 i = 0
 while i < len(X):
     if i < len(X)-lon:
@@ -40,6 +41,7 @@ while i < len(X):
         for j in range(lon):
             res.append(X[i+j])
         
+        Ybis.append(res)
         res = normalize2(res)
         Y.append(res)
         i = i+overlap
@@ -47,6 +49,8 @@ while i < len(X):
         i += 1
 
 Y = np.array(Y)
+Ybis = np.array(Ybis)
+
 
 df = pd.DataFrame(Y)
 m = np.zeros(len(df))
@@ -54,10 +58,12 @@ v = np.zeros(len(df))
 for i in range(len(m)):
     m[i] = np.mean(Y[i])
     v[i] = np.var(Y[i])
+    #vol[i] = sqrt(np.var())
+    
 df['mean'] = m
 df['var'] = v
 
-model = GaussianHMM(n_components = ncomp).fit(Y)
+model = GaussianHMM(n_components = ncomp).fit(Y[:9000])
 
 
 hidden_states = model.predict(Y)
@@ -71,12 +77,39 @@ W = model.transmat_
 
 #%%
 
+states = pd.DataFrame(np.zeros((ncomp, 5)), columns=['count', 'avg_variation', 'avg_mean', 'avg_variance', 'avg_vol'])
+
 for i in range(ncomp):
     ind = np.where(hidden_states == i)[0]
     print('State', i)
-    print('Count',len(ind))
-    print('Variation {:0.2f} %'.format((np.mean(Y.T[-1][np.where(hidden_states == i)]) - 1) * 100))
+    states.iloc[i]['count'] = len(ind)/len(Y)*100
+    print('Count',len(ind), '{:0.2f} %'.format(states.ix[i,'count']))
+    states.iloc[i]['avg_variation'] = (np.mean([Y.T[-1][j]/Y.T[-6][j] for j in np.where(hidden_states == i)[0]]) - 1) * 100
+    print('Average variation {:0.2f} %'.format(states.ix[i, 'avg_variation']))
+    states.iloc[i]['avg_mean'] = np.mean(df['mean'].ix[np.where(hidden_states == i)])
+    print('Average mean {:0.5f}'.format(states.ix[i,'avg_mean']))
+    states.iloc[i]['avg_variance'] = np.mean(df['var'].ix[np.where(hidden_states == i)])
+    print('Average variance {:0.7f}'.format(states.ix[i, 'avg_variance']))
+    states.iloc[i]['avg_vol'] = np.mean(df['var'].ix[np.where(hidden_states == i)])
+    print('Average volatility {:0.7f}'.format(states.ix[i, 'avg_vol']))
     for i in ind:
         plt.plot(Y[i])
     plt.show()
-#%%
+#%% Strategy test
+    
+Ytest = Y[9000:]
+Ybistest = Ybis[9000:]
+
+Spred = model.predict(Ytest)
+
+bets = np.zeros(len(Ytest))
+
+for i in range(len(bets)):
+    u = Spred[i]
+    bets[i] = sum([W[u][j] * 1 * (states.loc[j, 'avg_variation']) for j in range(ncomp)])
+    
+earnings = [
+        1 * (Ybistest[i+1][14] / Ybistest[i+1][9] - 1)
+        for i in range(len(bets) - 1) if bets[i] > 0.03]
+print(sum(earnings))
+plt.plot(earnings)
