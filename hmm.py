@@ -62,8 +62,9 @@ for i in range(len(m)):
     
 df['mean'] = m
 df['var'] = v
-
-model = GaussianHMM(n_components = ncomp).fit(Y[:9000])
+lbd = np.int(2)
+model = GaussianHMM(n_components = ncomp).fit(np.concatenate((Y[0:lbd*1000], Y[(lbd + 1)*1000:])),
+                    [np.int(lbd*1000), np.int(len(Y) - (lbd+1)*1000)])
 
 
 hidden_states = model.predict(Y)
