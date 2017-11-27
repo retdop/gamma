@@ -1,18 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Nov 25 13:21:08 2017
-
-@author: hubert
-"""
-
 import numpy as np
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
 from hmmlearn.hmm import GaussianHMM
 
-#os.chdir('/home/gabriel/fun/trading/gamma')
-os.chdir('/Users/hubert/Documents/D/Bit')
+os.chdir('/home/gabriel/fun/trading/gamma')
+#os.chdir('/Users/hubert/Documents/D/Bit')
 
 
 data = pd.read_csv('data/data_all.txt', delimiter = ' ')
@@ -35,9 +28,9 @@ def normalize2(v):
 
 #%%
 lon = 15
-overlap = 1
+overlap = 5
 
-ncomp = 5
+ncomp = 11
 
 Y = []
 i = 0
@@ -78,15 +71,12 @@ W = model.transmat_
 
 #%%
 
-state = 3
-
-cunt = 0
-for i in np.where(hidden_states == state)[0]:
-    plt.plot(Y[i])
-    cunt += 1
-print(cunt)
+for i in range(ncomp):
+    ind = np.where(hidden_states == i)[0]
+    print('State', i)
+    print('Count',len(ind))
+    print('Variation {:0.2f} %'.format((np.mean(Y.T[-1][np.where(hidden_states == i)]) - 1) * 100))
+    for i in ind:
+        plt.plot(Y[i])
+    plt.show()
 #%%
-
-print(np.mean(Y.T[-1][np.where(hidden_states == 0)]))
-print(np.mean(Y.T[-1][np.where(hidden_states == 1)]))
-print(np.mean(Y.T[-1][np.where(hidden_states == 2)]))
